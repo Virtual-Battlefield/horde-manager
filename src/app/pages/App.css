@@ -1,0 +1,152 @@
+:root {
+  --left-margin: 10vw;
+  --upper-margin: 5vh;
+
+
+  --main-color: #2a3027;
+  --background-gray-color: #40493b;
+  --background-light-gray-color: #a4ae9e;
+  --alt-main-color: #2a485a;
+  --alt-light-main-color: #5b788c;
+
+  --text-color: #ebe9d7;
+
+  --fallback-image: url("https://cards.scryfall.io/art_crop/front/e/b/eb9963e0-a22a-4a64-aa0c-b7c67c5fee96.jpg?1629919504");
+}
+
+.Main-page {
+  color: var(--text-color);
+  position: relative;
+  min-height: 100vh;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+
+  hr {
+    color: var(--text-color);
+    border-color: var(--background-gray-color);
+    background-color: var(--text-color);
+  }
+}
+
+.Main-header {
+  padding: var(--upper-margin) var(--left-margin) 0;
+  background-color: var(--main-color);
+  font-size: calc(10px + 2vmin);
+  position: relative;
+
+  &>*:not(.header-cover) {
+    position: relative;
+    z-index: 2;
+  }
+
+  .header-cover {
+    position: absolute;
+    background-size: cover;
+    background-position: left;
+    width: 55%;
+    height: 100%;
+    top: 0;
+    right: 0;
+    z-index: 1;
+
+    background-image: var(--fallback-image);
+
+    mask: linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgb(0, 0, 0) 100%);
+  }
+}
+
+.Main-body {
+  padding: var(--upper-margin) var(--left-margin) 0;
+  background-color: var(--background-gray-color);
+  flex-grow: 1;
+}
+
+.card-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-content: flex-start;
+
+  &>* {
+    margin: 0.25em;
+    width: calc(100% / 2 - 0.5em);
+  }
+
+  &.col3>* {
+    width: calc(100% / 3 - 0.5em);
+  }
+
+  &.col5>* {
+    width: calc(100% / 5 - 0.5em);
+  }
+
+  &.col7>* {
+    width: calc(100% / 7 - 0.5em);
+  }
+}
+
+.sticky-bottom {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.Play-button {
+  /* margin: 1em; */
+  text-align: center;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
+  .button {
+    pointer-events: visible;
+    width: 35%;
+    min-width: 25vw;
+    margin: 1.5em;
+    background-color: var(--main-color);
+    color: var(--text-color);
+    border: 2px solid var(--background-light-gray-color);
+    border-radius: 10px;
+    font-size: 1.2em;
+    padding: 0.5em 0;
+    transition: all 0.2s;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--main-color);
+      border-color: var(--main-color);
+      background-color: var(--background-light-gray-color);
+    }
+  }
+}
+
+.grid-pattern {
+  --color-a: rgba(0, 0, 0, 0.1);
+  background-color: var(--main-color);
+  background-image: linear-gradient(var(--color-a) .1em, transparent .1em),
+    linear-gradient(90deg, var(--color-a) .1em, transparent .1em);
+  background-size: 1.5em 1.5em;
+  padding: 0;
+  height: 100%;
+}
+
+
+#life-slot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 2;
+
+  .life-container {
+    margin: 1em;
+    padding: 1em;
+    background-color: var(--background-gray-color);
+    border-radius: 15px;
+  }
+}
