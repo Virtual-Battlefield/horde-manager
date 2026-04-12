@@ -1,8 +1,6 @@
 import "./components.css";
-import { Deck } from "../models/Deck";
 import { CardsSlot } from "./CardContainer";
 import { useEffect, useState } from "react";
-import { ICardData, ICardState, Zone } from "../middleware/IType";
 import {
 	calculateCoord,
 	canDragCard,
@@ -12,8 +10,9 @@ import {
 } from "../middleware/battlefieldHelper";
 import { invlerp, isParent, patchObject } from "../middleware/handler";
 import { Buffer } from "../middleware/buffer";
+import { ICardData, ICardState, IDeck, Zone } from "@virtual-library/mtg-card-handler";
 
-function BattleField({ deck, handVisible }: { deck: Deck; handVisible: boolean }) {
+function BattleField({ deck, handVisible }: { deck: IDeck; handVisible: boolean }) {
 	const Deck = deck.sections[0];
 	const [cardDataList, setCardDataList] = useState<ICardData[]>(newFullDeck(Deck.card_list, Deck.color));
 

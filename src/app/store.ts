@@ -1,13 +1,13 @@
-import { Deck } from "./models/Deck";
+import { IDeck } from "@virtual-library/mtg-card-handler";
 import axios from "axios";
 
 export namespace Store {
-	export async function getAllDecks(): Promise<Array<Deck>> {
+	export async function getAllDecks(): Promise<Array<IDeck>> {
 		const { data: res } = await axios.get("http://localhost:5000/decks");
 		return res.decks;
 	}
 
-	export async function getDeck(index: number): Promise<Deck> {
+	export async function getDeck(index: number): Promise<IDeck> {
 		const { data: res } = await axios.get("http://localhost:5000/decks/" + index);
 		return res;
 	}

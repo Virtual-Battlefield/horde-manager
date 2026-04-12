@@ -3,13 +3,13 @@ import "./App.css";
 import { Link, useNavigate, useParams } from "react-router";
 import PhaseCardList from "../components/PhaseCardList";
 import { useData } from "../middleware/handler";
-import { Deck } from "../models/Deck";
+import { IDeck } from "@virtual-library/mtg-card-handler";
 
 /**
  * Save the deck in local storage when clicked to use it to play
  * @param deck
  */
-const saveDeck = (deck: Deck) => {
+const saveDeck = (deck: IDeck) => {
 	Store.Local.setObject("currentDeck", deck);
 };
 

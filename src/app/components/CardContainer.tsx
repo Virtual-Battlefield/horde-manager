@@ -1,8 +1,8 @@
 import "./components.css";
 import { CardShowcase } from "./CardShowcase";
-import { ICardData } from "../middleware/IType";
 import ContextMenu, { ContextMenuItem } from "./ContextMenu";
 import { getGlobalCardIndex } from "../middleware/battlefieldHelper";
+import { ICardData } from "@virtual-library/mtg-card-handler";
 
 type CardContainerProps = {
 	ref: React.RefObject<HTMLDivElement | null>;

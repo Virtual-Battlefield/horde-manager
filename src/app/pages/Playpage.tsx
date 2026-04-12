@@ -1,11 +1,11 @@
 import "./App.css";
 import { useEffect } from "react";
 import BattleField from "../components/BattleField";
-import { Deck } from "../models/Deck";
+import { IDeck } from "@virtual-library/mtg-card-handler";
 import { Store } from "../store";
 
 function Playpage() {
-	const currentDeck = Store.Local.getObject("currentDeck") as Deck;
+	const currentDeck = Store.Local.getObject("currentDeck") as IDeck;
 
 	useEffect(() => {
 		window.addEventListener("beforeunload", alertUser);

@@ -1,7 +1,6 @@
 import { useRef } from "react";
-import { Card } from "../models/Card";
+import { Card, ICardData, ICardState, Zone } from "@virtual-library/mtg-card-handler";
 import { shuffle, clamp, toNumber } from "./handler";
-import { ICardData, ICardState, Zone } from "./IType";
 
 export const defineZoneRef = () => {
 	const ZoneRef: Map<Zone, React.RefObject<HTMLDivElement | null>> = new Map();

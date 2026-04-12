@@ -1,8 +1,8 @@
 import "./components.css";
-import { Section } from "../models/Section";
 import CardList from "./CardList";
+import { ISection } from "@virtual-library/mtg-card-handler";
 
-function PhaseCardList({ title, phase }: { title: string; phase: Section }) {
+function PhaseCardList({ title, phase }: { title: string; phase: ISection }) {
 	return (
 		<div>
 			<h3>

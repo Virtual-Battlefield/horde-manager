@@ -1,8 +1,8 @@
 import "./components.css";
 import { Link } from "react-router";
-import type { Deck } from "../models/Deck";
+import { IDeck } from "@virtual-library/mtg-card-handler";
 
-function ListDeckCard({ deck }: { deck: Deck }) {
+function ListDeckCard({ deck }: { deck: IDeck }) {
 	return (
 		<Link
 			className="deck-card"

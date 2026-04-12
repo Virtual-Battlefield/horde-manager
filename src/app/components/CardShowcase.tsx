@@ -1,5 +1,5 @@
 import "./components.css";
-import { Card } from "../models/Card";
+import { Card } from "@virtual-library/mtg-card-handler";
 
 type CardDisplayProps = {
 	card: Card;
