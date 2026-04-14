@@ -1,4 +1,4 @@
-import "./components.css";
+import "../components.css";
 import CardList from "./CardList";
 import { ISection } from "@virtual-library/mtg-card-handler";
 

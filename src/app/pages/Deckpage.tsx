@@ -1,7 +1,7 @@
 import { Store } from "../store";
 import "./App.css";
 import { Link, useNavigate, useParams } from "react-router";
-import PhaseCardList from "../components/PhaseCardList";
+import PhaseCardList from "../components/exhibit/PhaseCardList";
 import { useData } from "../middleware/handler";
 import { IDeck } from "@virtual-library/mtg-card-handler";
 

@@ -1,7 +1,7 @@
-import "./components.css";
-import { CardShowcase } from "./CardShowcase";
-import ContextMenu, { ContextMenuItem } from "./ContextMenu";
-import { getGlobalCardIndex } from "../middleware/battlefieldHelper";
+import "../components.css";
+import { CardShowcase } from "../CardShowcase";
+import ContextMenu, { ContextMenuItem } from "../ContextMenu";
+import { getGlobalCardIndex } from "../../middleware/battlefieldHelper";
 import { ICardData } from "@virtual-library/mtg-card-handler";
 
 type CardContainerProps = {

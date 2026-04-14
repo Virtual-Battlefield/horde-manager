@@ -1,4 +1,4 @@
-import "./components.css";
+import "../components.css";
 import { CardsSlot } from "./CardContainer";
 import { useEffect, useState } from "react";
 import {
@@ -7,9 +7,9 @@ import {
 	defineZoneRef,
 	getGlobalCardIndex,
 	newFullDeck,
-} from "../middleware/battlefieldHelper";
-import { invlerp, isParent, patchObject } from "../middleware/handler";
-import { Buffer } from "../middleware/buffer";
+} from "../../middleware/battlefieldHelper";
+import { invlerp, isParent, patchObject } from "../../middleware/handler";
+import { Buffer } from "../../middleware/buffer";
 import { ICardData, ICardState, IDeck, Zone } from "@virtual-library/mtg-card-handler";
 
 function BattleField({ deck, handVisible }: { deck: IDeck; handVisible: boolean }) {

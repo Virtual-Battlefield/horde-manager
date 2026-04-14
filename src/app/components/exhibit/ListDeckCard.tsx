@@ -1,4 +1,4 @@
-import "./components.css";
+import "../components.css";
 import { Link } from "react-router";
 import { IDeck } from "@virtual-library/mtg-card-handler";
 

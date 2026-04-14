@@ -1,8 +1,8 @@
 import "./App.css";
 import { useEffect } from "react";
-import BattleField from "../components/BattleField";
 import { IDeck } from "@virtual-library/mtg-card-handler";
 import { Store } from "../store";
+import BattleField from "../components/playpage/BattleField";
 
 function Playpage() {
 	const currentDeck = Store.Local.getObject("currentDeck") as IDeck;

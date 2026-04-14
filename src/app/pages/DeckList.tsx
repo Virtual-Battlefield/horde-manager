@@ -1,5 +1,5 @@
 import "./App.css";
-import ListDeckCard from "../components/ListDeckCard";
+import ListDeckCard from "../components/exhibit/ListDeckCard";
 import { Store } from "../store";
 import { useData } from "../middleware/handler";
 

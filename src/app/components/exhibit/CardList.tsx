@@ -1,6 +1,6 @@
-import "./components.css";
+import "../components.css";
 import { Card } from "@virtual-library/mtg-card-handler";
-import { CardShowcase } from "./CardShowcase";
+import { CardShowcase } from "../CardShowcase";
 
 interface CardDisplay {
 	id: string;
