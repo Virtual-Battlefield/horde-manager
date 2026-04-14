@@ -1,3 +1,4 @@
+import { PropsWithChildren } from "react";
 import "./components.css";
 import { Card } from "@virtual-library/mtg-card-handler";
 
@@ -9,16 +10,25 @@ type CardDisplayProps = {
 	sleeveColor?: string;
 };
 
-export function CardShowcase({ card, occurence, isFrontSide, isFrontFaceSide, sleeveColor }: CardDisplayProps) {
+export function CardShowcase({
+	card,
+	occurence,
+	isFrontSide,
+	isFrontFaceSide,
+	sleeveColor,
+	children,
+}: PropsWithChildren<CardDisplayProps>) {
 	let backSide = null;
 	if (sleeveColor != undefined) {
 		const backgroundCover = { "--background-color": sleeveColor } as React.CSSProperties;
 		backSide = <div className="card-back-side" style={backgroundCover}></div>;
 	}
 
+	console.log(isFrontFaceSide, isFrontFaceSide ? "-non-" : " rotate");
+
 	return (
-		<div className={"card" + (isFrontSide ? "" : " rotate")}>
-			<div className={"card-content" + (isFrontFaceSide ? "" : " rotate")}>
+		<div className={"card" + (isFrontSide == undefined || isFrontSide ? "" : " rotate")}>
+			<div className={"card-content" + (isFrontFaceSide == undefined || isFrontFaceSide ? "" : " rotate")}>
 				<div className="front-card">
 					<img src={card.front_card.full_image.toString()} alt={card.front_card.name} />
 				</div>
@@ -32,6 +42,7 @@ export function CardShowcase({ card, occurence, isFrontSide, isFrontFaceSide, sl
 						<div>x {occurence}</div>
 					</div>
 				)}
+				{children}
 			</div>
 			{backSide ?? ""}
 		</div>

@@ -1,6 +1,8 @@
 import "../components.css";
 import { Card } from "@virtual-library/mtg-card-handler";
 import { CardShowcase } from "../CardShowcase";
+import { patchObject } from "../../middleware/handler";
+import { useState } from "react";
 
 interface CardDisplay {
 	id: string;
@@ -25,14 +27,23 @@ function CardList({ cardList, color }: { cardList: Card[]; color?: string }) {
 	return (
 		<div className="card-container col7">
 			{uniqueCard.length > 0 &&
-				uniqueCard.map((cardObj) => (
-					<CardShowcase
-						key={cardObj.id}
-						card={cardObj.card_data}
-						occurence={cardObj.occurence}
-						sleeveColor={color}
-					/>
-				))}
+				uniqueCard.map((cardObj) => {
+					const [front, setFront] = useState(true);
+					return (
+						<CardShowcase
+							key={cardObj.id}
+							card={cardObj.card_data}
+							occurence={cardObj.occurence}
+							isFrontFaceSide={front}
+							sleeveColor={color}>
+							{cardObj.card_data.back_card && (
+								<div className="revertCard onCard" onClick={() => setFront(!front)}>
+									<button>↩</button>
+								</div>
+							)}
+						</CardShowcase>
+					);
+				})}
 		</div>
 	);
 }
