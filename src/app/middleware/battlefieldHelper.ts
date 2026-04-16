@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { Card, ICardData, ICardState, Zone } from "@virtual-library/mtg-card-handler";
+import { Card, CardType, ICardData, ICardState, Zone } from "@virtual-library/mtg-card-handler";
 import { shuffle, clamp, toNumber } from "./handler";
 
 export const defineZoneRef = () => {
@@ -17,6 +17,7 @@ export function newFullDeck(cardList: Card[], sleeveColor: string) {
 	return shuffle(cardList).map((card, index) => {
 		const state: ICardState = {
 			id: card.id + "_" + index,
+			type: CardType.Normal,
 			sleeveColor: sleeveColor, // deck.sections[0].color,
 			isFrontFaceSide: true,
 			isFrontSide: false,

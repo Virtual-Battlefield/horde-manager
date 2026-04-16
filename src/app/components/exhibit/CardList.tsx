@@ -1,7 +1,6 @@
 import "../components.css";
 import { Card } from "@virtual-library/mtg-card-handler";
 import { CardShowcase } from "../CardShowcase";
-import { patchObject } from "../../middleware/handler";
 import { useState } from "react";
 
 interface CardDisplay {
