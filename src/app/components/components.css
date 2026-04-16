@@ -155,7 +155,7 @@
 
     .container {
         margin: 1em;
-        padding: 1em;
+        padding: 0.5em;
         position: relative;
         height: stretch;
 
@@ -169,7 +169,6 @@
             aspect-ratio: 7 / 10;
             box-shadow: inset 0px 0px 10px 0px #000;
         }
-
 
         /* add overlay when a card has its context menu open */
         .card-list .card-holder:has(.context-menu) .card,

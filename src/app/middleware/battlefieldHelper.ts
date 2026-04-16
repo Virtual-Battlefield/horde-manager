@@ -13,7 +13,7 @@ export const defineZoneRef = () => {
 	return ZoneRef;
 };
 
-export function newFullDeck(cardList: Card[], sleeveColor: string) {
+export function newFullDeck(cardList: Card[], sleeveColor: string): ICardData[] {
 	return shuffle(cardList).map((card, index) => {
 		const state: ICardState = {
 			id: card.id + "_" + index,
@@ -32,6 +32,10 @@ export function newFullDeck(cardList: Card[], sleeveColor: string) {
 	});
 }
 
+export function getGlobalCardIdIndex(id: string): number {
+	return toNumber(id.slice(id.lastIndexOf("_") + 1));
+}
+
 export function getGlobalCardIndex(card: ICardData): number;
 export function getGlobalCardIndex(card: HTMLElement): number;
 export function getGlobalCardIndex(card: any): number {
@@ -41,7 +45,7 @@ export function getGlobalCardIndex(card: any): number {
 	} else if (typeof card === "object") {
 		id = card.state.id;
 	}
-	return toNumber(id.slice(id.lastIndexOf("_") + 1));
+	return getGlobalCardIdIndex(id);
 }
 
 export function canDragCard(clickedTarget: HTMLElement, allowID: string[]) {

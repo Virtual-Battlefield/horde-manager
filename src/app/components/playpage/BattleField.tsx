@@ -25,11 +25,12 @@ function BattleField({ deck, handVisible }: { deck: IDeck; handVisible: boolean 
 		dropZone.push(Zone.Hand);
 	}
 
-	const getContainer = (slot: Zone) => ZoneRef.get(slot)?.current?.querySelector<HTMLElement>(".container");
-
 	const setupEvent = (allowGrabZone: Zone[], dropZone: Zone[]): void => {
 		let dragging: HTMLElement | null = null;
+
+		const getContainer = (slot: Zone) => ZoneRef.get(slot)?.current?.querySelector<HTMLElement>(".container");
 		const currentContainer = (): HTMLElement | null | undefined => dragging?.closest(".container");
+
 		let nextDropSlot: Zone | null = null;
 		let buffer = new Buffer(300);
 		let isSimpleClick: boolean = false;
@@ -67,6 +68,7 @@ function BattleField({ deck, handVisible }: { deck: IDeck; handVisible: boolean 
 			if (!dragging) return;
 			const container = currentContainer();
 			if (container == undefined) return;
+
 			const newCoordinates = calculateCoord(container, dragging, { x: ev.pageX, y: ev.pageY });
 			if (!newCoordinates) return;
 
