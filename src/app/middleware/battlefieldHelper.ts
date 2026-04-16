@@ -77,3 +77,27 @@ export function calculateCoord(container: HTMLElement, dragged: HTMLElement, sta
 		y: clamp(0, maxCoordinates[1], startingCoord.y - rect.top - dragged.offsetHeight / 2),
 	};
 }
+
+export function createToken(card: Card, identifier: string): ICardData {
+	return {
+		card: card,
+		state: {
+			id: card.id + "_" + identifier,
+			sleeveColor: "#0f0c05",
+			isFrontFaceSide: true,
+			isFrontSide: false,
+			visibleArrow: false,
+			zone: Zone.Battlefield,
+			isTapped: false,
+		},
+		type: CardType.Token,
+	};
+}
+
+export function isTokenID(id: string) {
+	return id.includes("token");
+}
+
+export function isToken(card: ICardData): boolean {
+	return card.type == CardType.Token;
+}

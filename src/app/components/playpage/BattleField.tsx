@@ -4,17 +4,37 @@ import { useEffect, useState } from "react";
 import {
 	calculateCoord,
 	canDragCard,
+	createToken,
 	defineZoneRef,
 	getGlobalCardIndex,
+	getGlobalCardIdIndex,
+	isToken,
+	isTokenID,
 	newFullDeck,
 } from "../../middleware/battlefieldHelper";
 import { invlerp, isParent, patchObject } from "../../middleware/handler";
 import { Buffer } from "../../middleware/buffer";
-import { ICardData, ICardState, IDeck, Zone } from "@virtual-library/mtg-card-handler";
+import { Card, ICardData, ICardState, IDeck, Zone } from "@virtual-library/mtg-card-handler";
 
-function BattleField({ deck, handVisible }: { deck: IDeck; handVisible: boolean }) {
+function BattleField({
+	deck,
+	handVisible,
+	additionnalCard,
+}: {
+	deck: IDeck;
+	handVisible: boolean;
+	additionnalCard: Card[];
+}) {
 	const Deck = deck.sections[0];
 	const [cardDataList, setCardDataList] = useState<ICardData[]>(newFullDeck(Deck.card_list, Deck.color));
+	const [tokenList, setTokenList] = useState<ICardData[]>(
+		additionnalCard.map((card, index) => createToken(card, "token_" + index)),
+	);
+
+	const getCurrentCard = (id: string) => {
+		const index = getGlobalCardIdIndex(id);
+		return id.includes("token") ? tokenList[index] : cardDataList[index];
+	};
 
 	const ZoneRef = defineZoneRef();
 
@@ -99,18 +119,16 @@ function BattleField({ deck, handVisible }: { deck: IDeck; handVisible: boolean 
 		document.addEventListener("pointerup", () => {
 			if (dragging) {
 				dragging.classList.remove("dragging");
-				// get index of the card in the container internal list
-				const index = getGlobalCardIndex(dragging);
 
 				if (nextDropSlot !== null) {
-					changeCardState(index, { zone: nextDropSlot }, true);
+					changeCardState(dragging.id, { zone: nextDropSlot }, true);
 					setOverlapped(nextDropSlot, false);
 				} else if (isSimpleClick) {
 					buffer.cancel();
 					// to do: set onClick event depending of the zone it was applied
 					// for the moment will try to tapped the card in each zone
 					// (will have a visual effect only on the battlefield because of css)
-					togleCardState(index, "isTapped");
+					togleCardState(dragging.id, "isTapped");
 				}
 			}
 
@@ -126,9 +144,9 @@ function BattleField({ deck, handVisible }: { deck: IDeck; handVisible: boolean 
 		hasSetupEvent = true;
 	}, [hasSetupEvent]);
 
-	const changeCardState = (cardIndex: number, newState: ICardState, resetState = false) => {
-		const newList = [...cardDataList];
-		const currentCard = newList[cardIndex]; // find element from a new list
+	const changeCardState = (cardId: string, newState: ICardState, resetState = false) => {
+		const newList = isTokenID(cardId) ? [...tokenList] : [...cardDataList];
+		const currentCard = newList[getGlobalCardIdIndex(cardId)]; // find element from a new list
 		if (!currentCard) return;
 
 		if (resetState) {
@@ -138,18 +156,19 @@ function BattleField({ deck, handVisible }: { deck: IDeck; handVisible: boolean 
 
 		currentCard.state = patchObject(currentCard.state, newState);
 
-		setCardDataList(newList);
+		if (isToken(currentCard)) setTokenList(newList);
+		else setCardDataList(newList);
 	};
 
-	const togleCardState = (cardIndex: number, stateName: string) => {
-		const currentState = cardDataList[cardIndex].state[stateName];
+	const togleCardState = (cardId: string, stateName: string) => {
+		const currentState = getCurrentCard(cardId).state[stateName];
 		if (typeof currentState != "boolean" && typeof currentState != "undefined") {
 			console.error("Can't toggle that kind of statement: " + typeof currentState);
 			return;
 		}
 
 		const obj = { [stateName]: typeof currentState == "undefined" ? true : !currentState };
-		changeCardState(cardIndex, obj);
+		changeCardState(cardId, obj);
 	};
 
 	const moveFromStack = (currentCardList: ICardData[]) => {
@@ -166,7 +185,7 @@ function BattleField({ deck, handVisible }: { deck: IDeck; handVisible: boolean 
 			currentCard.card.front_card.type_line.includes("Instant")
 				? Zone.Graveyard
 				: Zone.Battlefield;
-		changeCardState(globalIndex, { zone: destination, visibleArrow: true }, true);
+		changeCardState(currentCard.state.id!, { zone: destination, visibleArrow: true }, true);
 	};
 
 	return (
@@ -174,7 +193,7 @@ function BattleField({ deck, handVisible }: { deck: IDeck; handVisible: boolean 
 			<CardsSlot
 				ref={ZoneRef.get(Zone.Battlefield)!}
 				id="battlefield-slot"
-				cardList={cardDataList.filter((card) => card.state.zone == Zone.Battlefield)}
+				cardList={cardDataList.filter((card) => card.state.zone == Zone.Battlefield).concat()}
 				cardContextMenu={[
 					// Add:
 					//   - Move to Deck
@@ -188,19 +207,17 @@ function BattleField({ deck, handVisible }: { deck: IDeck; handVisible: boolean 
 					{
 						id: "face-down",
 						caption: "Face Down/Up",
-						onClick: (cardIndex) => {
-							changeCardState(cardIndex, { isFrontSide: !cardDataList[cardIndex].state.isFrontSide });
+						onClick: (cardId) => {
+							togleCardState(cardId, "isFrontSide");
 						},
 					},
 					{
 						id: "turn",
 						caption: "Turn Over",
-						onClick: (cardIndex) => {
-							changeCardState(cardIndex, {
-								isFrontFaceSide: !cardDataList[cardIndex].state.isFrontFaceSide,
-							});
+						onClick: (cardId) => {
+							togleCardState(cardId, "isFrontFaceSide");
 						},
-						isHidden: (cardIndex) => cardDataList[cardIndex].card.back_card == undefined,
+						isHidden: (cardId) => getCurrentCard(cardId).card.back_card == undefined,
 					},
 				]}
 			/>
@@ -211,7 +228,7 @@ function BattleField({ deck, handVisible }: { deck: IDeck; handVisible: boolean 
 				cardList={cardDataList.filter((card) => card.state.zone == Zone.Deck)}
 				onClick={(currentCardList) => {
 					changeCardState(
-						getGlobalCardIndex(currentCardList[currentCardList.length - 1]),
+						currentCardList[currentCardList.length - 1].state.id!,
 						{
 							zone: handVisible ? Zone.Hand : Zone.Stack,
 							isFrontSide: true,
@@ -264,22 +281,22 @@ function BattleField({ deck, handVisible }: { deck: IDeck; handVisible: boolean 
 					{
 						id: "to-stack",
 						caption: "Move to Stack",
-						onClick: (cardIndex) => {
-							changeCardState(cardIndex, { zone: Zone.Stack }, true);
+						onClick: (cardId) => {
+							changeCardState(cardId, { zone: Zone.Stack }, true);
 						},
 					},
 					{
 						id: "to-graveyard",
 						caption: "Discard",
-						onClick: (cardIndex) => {
-							changeCardState(cardIndex, { zone: Zone.Graveyard, visibleArrow: true }, true);
+						onClick: (cardId) => {
+							changeCardState(cardId, { zone: Zone.Graveyard, visibleArrow: true }, true);
 						},
 					},
 					{
 						id: "to-exile",
 						caption: "Move to Exile",
-						onClick: (cardIndex) => {
-							changeCardState(cardIndex, { zone: Zone.Exile, visibleArrow: true }, true);
+						onClick: (cardId) => {
+							changeCardState(cardId, { zone: Zone.Exile, visibleArrow: true }, true);
 						},
 					},
 				]}
@@ -300,15 +317,15 @@ function BattleField({ deck, handVisible }: { deck: IDeck; handVisible: boolean 
 					{
 						id: "to-graveyard",
 						caption: "Move to Graveyard",
-						onClick: (cardIndex) => {
-							changeCardState(cardIndex, { zone: Zone.Graveyard, visibleArrow: true }, true);
+						onClick: (cardId) => {
+							changeCardState(cardId, { zone: Zone.Graveyard, visibleArrow: true }, true);
 						},
 					},
 					{
 						id: "to-exile",
 						caption: "Move to Exile",
-						onClick: (cardIndex) => {
-							changeCardState(cardIndex, { zone: Zone.Exile, visibleArrow: true }, true);
+						onClick: (cardId) => {
+							changeCardState(cardId, { zone: Zone.Exile, visibleArrow: true }, true);
 						},
 					},
 				]}

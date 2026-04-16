@@ -1,11 +1,12 @@
 import "./App.css";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { IDeck } from "@virtual-library/mtg-card-handler";
 import { Store } from "../store";
 import BattleField from "../components/playpage/BattleField";
 
 function Playpage() {
 	const currentDeck = Store.Local.getObject("currentDeck") as IDeck;
+	const [fieldToken, setFieldToken] = useState([]);
 
 	useEffect(() => {
 		window.addEventListener("beforeunload", alertUser);
@@ -22,9 +23,12 @@ function Playpage() {
 		<div className="Main-page">
 			<div className="Main-body grid-pattern">
 				<div id="life-slot">
-					<div className="life-container">life</div>
+					<div className="life-container">
+						<span>life</span>
+						<div>Add token</div>
+					</div>
 				</div>
-				<BattleField deck={currentDeck} handVisible={true} />
+				<BattleField deck={currentDeck} handVisible={false} additionnalCard={fieldToken} />
 			</div>
 		</div>
 	);

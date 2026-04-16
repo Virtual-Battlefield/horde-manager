@@ -4,18 +4,18 @@ import { getLocalPosition } from "../middleware/handler";
 
 type Props = {
 	id: string;
-	cardIndex: number;
+	cardId: string;
 	items: ContextMenuItem[];
 };
 
 export type ContextMenuItem = {
 	id: string;
 	caption: string;
-	onClick: (index: number) => void;
-	isHidden?: (index: number) => boolean;
+	onClick: (id: string) => void;
+	isHidden?: (id: string) => boolean;
 };
 
-function ContextMenu({ items, cardIndex, children, id }: PropsWithChildren<Props>) {
+function ContextMenu({ items, cardId, children, id }: PropsWithChildren<Props>) {
 	const [isVisible, setIsVisible] = useState(false);
 	const [position, setPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
@@ -86,14 +86,14 @@ function ContextMenu({ items, cardIndex, children, id }: PropsWithChildren<Props
 			{isVisible && (
 				<ul ref={ref} style={{ left: position.x, top: position.y }} className="context-menu">
 					{items.map((item) => {
-						if (item.isHidden?.(cardIndex)) return "";
+						if (item.isHidden?.(cardId)) return "";
 						return (
 							<li
 								key={item.id}
 								onClick={(e: MouseEvent) => {
 									e.stopPropagation();
 									setIsVisible(false);
-									item.onClick(cardIndex);
+									item.onClick(cardId);
 								}}>
 								{item.caption}
 							</li>

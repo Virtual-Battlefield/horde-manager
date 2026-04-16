@@ -30,10 +30,7 @@ export function CardsSlot({ ref, id, placeholder, cardList, cardContextMenu, onC
 		return (
 			<div className={"card-holder" + (cardData.state.isTapped ? " tapped" : "")} id={idE} key={idE}>
 				{cardContextMenu ? (
-					<ContextMenu
-						id={"context-menu-" + id}
-						cardIndex={getGlobalCardIndex(cardData)}
-						items={cardContextMenu}>
+					<ContextMenu id={"context-menu-" + id} cardId={cardData.state.id!} items={cardContextMenu}>
 						{card}
 					</ContextMenu>
 				) : (
