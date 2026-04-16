@@ -24,8 +24,6 @@ export function CardShowcase({
 		backSide = <div className="card-back-side" style={backgroundCover}></div>;
 	}
 
-	console.log(isFrontFaceSide, isFrontFaceSide ? "-non-" : " rotate");
-
 	return (
 		<div className={"card" + (isFrontSide == undefined || isFrontSide ? "" : " rotate")}>
 			<div className={"card-content" + (isFrontFaceSide == undefined || isFrontFaceSide ? "" : " rotate")}>
