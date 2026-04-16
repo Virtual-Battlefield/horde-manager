@@ -174,16 +174,15 @@ function BattleField({ deck, handVisible }: { deck: IDeck; handVisible: boolean 
 				id="battlefield-slot"
 				cardList={cardDataList.filter((card) => card.state.zone == Zone.Battlefield)}
 				cardContextMenu={[
-					{
-						id: "to-graveyard",
-						caption: "Move to Graveyard",
-						onClick: (cardIndex) => changeCardState(cardIndex, { zone: Zone.Graveyard }),
-					},
-					{
-						id: "to-exile",
-						caption: "Move to Exile",
-						onClick: (cardIndex) => changeCardState(cardIndex, { zone: Zone.Exile }),
-					},
+					// Add:
+					//   - Move to Deck
+					//     - Top
+					//     - Bottom
+					//     - Shuffle
+					//     - Fixed position -> open popup
+					// - Create Copy (copy is a token)
+					// - Phase out / in
+					// - Toggle Counters
 					{
 						id: "face-down",
 						caption: "Face Down/Up",
@@ -218,6 +217,19 @@ function BattleField({ deck, handVisible }: { deck: IDeck; handVisible: boolean 
 						true,
 					);
 				}}
+				cardContextMenu={
+					[
+						// Add:
+						// - Shuffle
+						// - Manage top -> open popup
+						//   - View X
+						//   - Reveal X
+						//   - Scry X
+						//   - Surveil X
+						//   - Mill X
+						// - Search for... -> open popup
+					]
+				}
 			/>
 
 			<CardsSlot
@@ -225,6 +237,10 @@ function BattleField({ deck, handVisible }: { deck: IDeck; handVisible: boolean 
 				id="exile-slot"
 				placeholder="Exile"
 				cardList={cardDataList.filter((card) => card.state.zone == Zone.Exile)}
+				// onClick={[
+				// 	// Add:
+				// 	// - See Cards
+				// ]}
 			/>
 
 			<CardsSlot
@@ -232,6 +248,10 @@ function BattleField({ deck, handVisible }: { deck: IDeck; handVisible: boolean 
 				id="graveyard-slot"
 				placeholder="Graveyard"
 				cardList={cardDataList.filter((card) => card.state.zone == Zone.Graveyard)}
+				// onClick={[
+				// 	// Add:
+				// 	// - See Cards
+				// ]}
 			/>
 
 			<CardsSlot
@@ -268,6 +288,13 @@ function BattleField({ deck, handVisible }: { deck: IDeck; handVisible: boolean 
 				cardList={cardDataList.filter((card) => card.state.zone == Zone.Stack)}
 				onClick={moveFromStack}
 				cardContextMenu={[
+					// Add:
+					// - Create Copy (copy is a token)
+					// - Move to Deck
+					//   - Top
+					//   - Bottom
+					//   - Shuffle
+					//   - Fixed position -> open popup
 					{
 						id: "to-graveyard",
 						caption: "Move to Graveyard",
