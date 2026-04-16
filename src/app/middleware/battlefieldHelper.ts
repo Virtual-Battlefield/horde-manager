@@ -17,7 +17,6 @@ export function newFullDeck(cardList: Card[], sleeveColor: string) {
 	return shuffle(cardList).map((card, index) => {
 		const state: ICardState = {
 			id: card.id + "_" + index,
-			type: CardType.Normal,
 			sleeveColor: sleeveColor, // deck.sections[0].color,
 			isFrontFaceSide: true,
 			isFrontSide: false,
@@ -28,6 +27,7 @@ export function newFullDeck(cardList: Card[], sleeveColor: string) {
 		return {
 			card: card,
 			state,
+			type: CardType.Normal,
 		};
 	});
 }
