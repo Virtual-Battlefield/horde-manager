@@ -101,7 +101,7 @@ function BattleField({ deck, handVisible }: { deck: IDeck; handVisible: boolean 
 				const index = getGlobalCardIndex(dragging);
 
 				if (nextDropSlot !== null) {
-					changeCardState(index, { zone: nextDropSlot });
+					changeCardState(index, { zone: nextDropSlot }, true);
 					setOverlapped(nextDropSlot, false);
 				} else if (isSimpleClick) {
 					buffer.cancel();
@@ -124,10 +124,15 @@ function BattleField({ deck, handVisible }: { deck: IDeck; handVisible: boolean 
 		hasSetupEvent = true;
 	}, [hasSetupEvent]);
 
-	const changeCardState = (cardIndex: number, newState: ICardState) => {
+	const changeCardState = (cardIndex: number, newState: ICardState, resetState = false) => {
 		const newList = [...cardDataList];
 		const currentCard = newList[cardIndex]; // find element from a new list
 		if (!currentCard) return;
+
+		if (resetState) {
+			newState.isFrontFaceSide = true;
+			newState.isTapped = false;
+		}
 
 		currentCard.state = patchObject(currentCard.state, newState);
 
@@ -159,7 +164,7 @@ function BattleField({ deck, handVisible }: { deck: IDeck; handVisible: boolean 
 			currentCard.card.front_card.type_line.includes("Instant")
 				? Zone.Graveyard
 				: Zone.Battlefield;
-		changeCardState(globalIndex, { zone: destination, visibleArrow: true });
+		changeCardState(globalIndex, { zone: destination, visibleArrow: true }, true);
 	};
 
 	return (
@@ -204,10 +209,14 @@ function BattleField({ deck, handVisible }: { deck: IDeck; handVisible: boolean 
 				placeholder="Deck"
 				cardList={cardDataList.filter((card) => card.state.zone == Zone.Deck)}
 				onClick={(currentCardList) => {
-					changeCardState(getGlobalCardIndex(currentCardList[currentCardList.length - 1]), {
-						zone: handVisible ? Zone.Hand : Zone.Stack,
-						isFrontSide: true,
-					});
+					changeCardState(
+						getGlobalCardIndex(currentCardList[currentCardList.length - 1]),
+						{
+							zone: handVisible ? Zone.Hand : Zone.Stack,
+							isFrontSide: true,
+						},
+						true,
+					);
 				}}
 			/>
 
@@ -234,21 +243,21 @@ function BattleField({ deck, handVisible }: { deck: IDeck; handVisible: boolean 
 						id: "to-stack",
 						caption: "Move to Stack",
 						onClick: (cardIndex) => {
-							changeCardState(cardIndex, { zone: Zone.Stack });
+							changeCardState(cardIndex, { zone: Zone.Stack }, true);
 						},
 					},
 					{
 						id: "to-graveyard",
-						caption: "Move to Graveyard",
+						caption: "Discard",
 						onClick: (cardIndex) => {
-							changeCardState(cardIndex, { zone: Zone.Graveyard, visibleArrow: true });
+							changeCardState(cardIndex, { zone: Zone.Graveyard, visibleArrow: true }, true);
 						},
 					},
 					{
 						id: "to-exile",
 						caption: "Move to Exile",
 						onClick: (cardIndex) => {
-							changeCardState(cardIndex, { zone: Zone.Exile, visibleArrow: true });
+							changeCardState(cardIndex, { zone: Zone.Exile, visibleArrow: true }, true);
 						},
 					},
 				]}
@@ -263,14 +272,14 @@ function BattleField({ deck, handVisible }: { deck: IDeck; handVisible: boolean 
 						id: "to-graveyard",
 						caption: "Move to Graveyard",
 						onClick: (cardIndex) => {
-							changeCardState(cardIndex, { zone: Zone.Graveyard, visibleArrow: true });
+							changeCardState(cardIndex, { zone: Zone.Graveyard, visibleArrow: true }, true);
 						},
 					},
 					{
 						id: "to-exile",
 						caption: "Move to Exile",
 						onClick: (cardIndex) => {
-							changeCardState(cardIndex, { zone: Zone.Exile, visibleArrow: true });
+							changeCardState(cardIndex, { zone: Zone.Exile, visibleArrow: true }, true);
 						},
 					},
 				]}
