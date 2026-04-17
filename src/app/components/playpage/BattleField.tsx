@@ -7,32 +7,30 @@ import {
 	createToken,
 	defineZoneRef,
 	getGlobalCardIndex,
-	getGlobalCardIdIndex,
 	isToken,
 	isTokenID,
 	newFullDeck,
 } from "../../middleware/battlefieldHelper";
 import { invlerp, isParent, patchObject } from "../../middleware/handler";
 import { Buffer } from "../../middleware/buffer";
-import { Card, ICardData, ICardState, IDeck, Zone } from "@virtual-library/mtg-card-handler";
+import { Card, ICardData, ICardState, IDeck, ISection, Zone } from "@virtual-library/mtg-card-handler";
 
 function BattleField({
 	deck,
 	handVisible,
 	additionnalCard,
 }: {
-	deck: IDeck;
+	deck: ISection;
 	handVisible: boolean;
 	additionnalCard: Card[];
 }) {
-	const Deck = deck.sections[0];
-	const [cardDataList, setCardDataList] = useState<ICardData[]>(newFullDeck(Deck.card_list, Deck.color));
+	const [cardDataList, setCardDataList] = useState<ICardData[]>(newFullDeck(deck.card_list, deck.color));
 	const [tokenList, setTokenList] = useState<ICardData[]>(
 		additionnalCard.map((card, index) => createToken(card, "token_" + index)),
 	);
 
 	const getCurrentCard = (id: string) => {
-		const index = getGlobalCardIdIndex(id);
+		const index = getGlobalCardIndex(id);
 		return id.includes("token") ? tokenList[index] : cardDataList[index];
 	};
 
@@ -146,7 +144,7 @@ function BattleField({
 
 	const changeCardState = (cardId: string, newState: ICardState, resetState = false) => {
 		const newList = isTokenID(cardId) ? [...tokenList] : [...cardDataList];
-		const currentCard = newList[getGlobalCardIdIndex(cardId)]; // find element from a new list
+		const currentCard = newList[getGlobalCardIndex(cardId)]; // find element from a new list
 		if (!currentCard) return;
 
 		if (resetState) {
@@ -176,7 +174,6 @@ function BattleField({
 
 		const tmpIndex = currentCardList.length - 1;
 		const currentCard = currentCardList[tmpIndex];
-		const globalIndex = getGlobalCardIndex(currentCard);
 
 		// If a sorcery or instant card is the top card of the stack,
 		// it goes in the graveyard upon resolution
@@ -185,7 +182,7 @@ function BattleField({
 			currentCard.card.front_card.type_line.includes("Instant")
 				? Zone.Graveyard
 				: Zone.Battlefield;
-		changeCardState(currentCard.state.id!, { zone: destination, visibleArrow: true }, true);
+		changeCardState(currentCard.id, { zone: destination, visibleArrow: true }, true);
 	};
 
 	return (
@@ -228,7 +225,7 @@ function BattleField({
 				cardList={cardDataList.filter((card) => card.state.zone == Zone.Deck)}
 				onClick={(currentCardList) => {
 					changeCardState(
-						currentCardList[currentCardList.length - 1].state.id!,
+						currentCardList[currentCardList.length - 1].id,
 						{
 							zone: handVisible ? Zone.Hand : Zone.Stack,
 							isFrontSide: true,

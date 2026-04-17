@@ -5,8 +5,10 @@ import { Store } from "../store";
 import BattleField from "../components/playpage/BattleField";
 
 function Playpage() {
-	const currentDeck = Store.Local.getObject("currentDeck") as IDeck;
+	const Deck = Store.Local.getObject("currentDeck") as IDeck;
 	const [fieldToken, setFieldToken] = useState([]);
+
+	const currentDeck = Deck.sections[0];
 
 	useEffect(() => {
 		window.addEventListener("beforeunload", alertUser);
@@ -18,7 +20,7 @@ function Playpage() {
 		e.preventDefault();
 	};
 
-	console.log(currentDeck);
+	console.log(Deck);
 	return (
 		<div className="Main-page">
 			<div className="Main-body grid-pattern">

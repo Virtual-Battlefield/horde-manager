@@ -1,7 +1,6 @@
 import "../components.css";
 import { CardShowcase } from "../CardShowcase";
 import ContextMenu, { ContextMenuItem } from "../ContextMenu";
-import { getGlobalCardIndex } from "../../middleware/battlefieldHelper";
 import { ICardData } from "@virtual-library/mtg-card-handler";
 
 type CardContainerProps = {
@@ -15,7 +14,7 @@ type CardContainerProps = {
 
 export function CardsSlot({ ref, id, placeholder, cardList, cardContextMenu, onClick }: CardContainerProps) {
 	let currentCardElements = cardList.map((cardData) => {
-		const idE = id + "_" + cardData.state.id;
+		const idE = id + "_" + cardData.id;
 
 		const card = (
 			<CardShowcase
@@ -30,7 +29,7 @@ export function CardsSlot({ ref, id, placeholder, cardList, cardContextMenu, onC
 		return (
 			<div className={"card-holder" + (cardData.state.isTapped ? " tapped" : "")} id={idE} key={idE}>
 				{cardContextMenu ? (
-					<ContextMenu id={"context-menu-" + id} cardId={cardData.state.id!} items={cardContextMenu}>
+					<ContextMenu id={"context-menu-" + id} cardId={cardData.id!} items={cardContextMenu}>
 						{card}
 					</ContextMenu>
 				) : (

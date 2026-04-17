@@ -16,7 +16,6 @@ export const defineZoneRef = () => {
 export function newFullDeck(cardList: Card[], sleeveColor: string): ICardData[] {
 	return shuffle(cardList).map((card, index) => {
 		const state: ICardState = {
-			id: card.id + "_" + index,
 			sleeveColor: sleeveColor, // deck.sections[0].color,
 			isFrontFaceSide: true,
 			isFrontSide: false,
@@ -25,6 +24,7 @@ export function newFullDeck(cardList: Card[], sleeveColor: string): ICardData[] 
 			isTapped: false,
 		};
 		return {
+			id: card.id + "_" + index,
 			card: card,
 			state,
 			type: CardType.Normal,
@@ -32,20 +32,8 @@ export function newFullDeck(cardList: Card[], sleeveColor: string): ICardData[] 
 	});
 }
 
-export function getGlobalCardIdIndex(id: string): number {
-	return toNumber(id.slice(id.lastIndexOf("_") + 1));
-}
-
-export function getGlobalCardIndex(card: ICardData): number;
-export function getGlobalCardIndex(card: HTMLElement): number;
-export function getGlobalCardIndex(card: any): number {
-	let id = "";
-	if (card instanceof HTMLElement) {
-		id = card.id;
-	} else if (typeof card === "object") {
-		id = card.state.id;
-	}
-	return getGlobalCardIdIndex(id);
+export function getGlobalCardIndex(cardId: string): number {
+	return toNumber(cardId.slice(cardId.lastIndexOf("_") + 1));
 }
 
 export function canDragCard(clickedTarget: HTMLElement, allowID: string[]) {
@@ -80,9 +68,9 @@ export function calculateCoord(container: HTMLElement, dragged: HTMLElement, sta
 
 export function createToken(card: Card, identifier: string): ICardData {
 	return {
+		id: card.id + "_" + identifier,
 		card: card,
 		state: {
-			id: card.id + "_" + identifier,
 			sleeveColor: "#0f0c05",
 			isFrontFaceSide: true,
 			isFrontSide: false,
