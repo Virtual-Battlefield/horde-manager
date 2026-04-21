@@ -13,7 +13,7 @@ type CardContainerProps = {
 };
 
 export function CardsSlot({ ref, id, placeholder, cardList, cardContextMenu, onClick }: CardContainerProps) {
-	let currentCardElements = cardList.map((cardData) => {
+	const currentCardElements = cardList.map((cardData) => {
 		const idE = id + "_" + cardData.id;
 
 		const card = (

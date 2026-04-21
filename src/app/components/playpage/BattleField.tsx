@@ -1,19 +1,10 @@
 import "../components.css";
 import { CardsSlot } from "./CardContainer";
 import { useEffect, useState } from "react";
-import {
-	calculateCoord,
-	canDragCard,
-	createToken,
-	defineZoneRef,
-	getGlobalCardIndex,
-	isToken,
-	isTokenID,
-	newFullDeck,
-} from "../../middleware/battlefieldHelper";
-import { invlerp, isParent, patchObject } from "../../middleware/handler";
-import { Buffer } from "../../middleware/buffer";
-import { Card, ICardData, ICardState, IDeck, ISection, Zone } from "@virtual-library/mtg-card-handler";
+import { createToken, getGlobalCardIndex, isToken, isTokenID, newFullDeck } from "../../middleware/battlefieldHelper";
+import { patchObject } from "../../middleware/handler";
+import { Card, ICardData, ICardState, ISection, Zone } from "@virtual-library/mtg-card-handler";
+import { BattlefieldEventHelper, MasterBattlefieldEvent } from "../../middleware/battlefieldEvent";
 
 function BattleField({
 	deck,
@@ -34,113 +25,21 @@ function BattleField({
 		return id.includes("token") ? tokenList[index] : cardDataList[index];
 	};
 
-	const ZoneRef = defineZoneRef();
-
-	const allowGrabZone = [Zone.Battlefield, Zone.Graveyard, Zone.Exile];
-	const dropZone = [Zone.Battlefield, Zone.Graveyard, Zone.Exile];
-	if (handVisible) {
-		allowGrabZone.push(Zone.Hand);
-		dropZone.push(Zone.Hand);
-	}
-
-	const setupEvent = (allowGrabZone: Zone[], dropZone: Zone[]): void => {
-		let dragging: HTMLElement | null = null;
-
-		const getContainer = (slot: Zone) => ZoneRef.get(slot)?.current?.querySelector<HTMLElement>(".container");
-		const currentContainer = (): HTMLElement | null | undefined => dragging?.closest(".container");
-
-		let nextDropSlot: Zone | null = null;
-		let buffer = new Buffer(300);
-		let isSimpleClick: boolean = false;
-
-		const setOverlapped = (slot: Zone, isOverlapped: boolean) => {
-			// slot.overlapped(isOverlapped);
-			if (isOverlapped) {
-				getContainer(slot)?.classList.add("overlapping");
-				nextDropSlot = slot;
-			} else if (nextDropSlot == slot) {
-				getContainer(slot)?.classList.remove("overlapping");
-				nextDropSlot = null;
-			}
-		};
-
-		document.addEventListener("pointerdown", (e: PointerEvent) => {
-			const target = canDragCard(
-				e.target as HTMLElement,
-				allowGrabZone.map((el) => ZoneRef.get(el)!.current!.id ?? ""),
-			);
-			// prevent drag if a other click than e.button == 0 (left click) was pressed
-			if (!target || e.button != 0) return;
-
-			isSimpleClick = true;
-			buffer.start(() => (isSimpleClick = false));
-
-			dragging = target;
-			target.classList.add("dragging");
-			// IMPORTANT
-			// On mobile, if not present, prevent event "pointerenter" and "pointerleave" to fire on other element
-			(e.target as HTMLElement).releasePointerCapture(e.pointerId);
-		});
-
-		document.addEventListener("pointermove", (ev: PointerEvent) => {
-			if (!dragging) return;
-			const container = currentContainer();
-			if (container == undefined) return;
-
-			const newCoordinates = calculateCoord(container, dragging, { x: ev.pageX, y: ev.pageY });
-			if (!newCoordinates) return;
-
-			if (container == getContainer(Zone.Hand)) {
-				const limit = container.offsetWidth - container.offsetLeft * 2 - dragging.offsetWidth;
-				//to preserve the rotation effect when holding the card in hand, we can't modify the 'left' property
-				//and '--calc' css variable is a percentage
-				dragging.style.setProperty("--calc", (invlerp(0, limit, newCoordinates.x) * 100).toString());
-			} else {
-				if (newCoordinates.x > 0) dragging.style.left = `${newCoordinates.x}px`;
-				if (newCoordinates.y > 0) dragging.style.top = `${newCoordinates.y}px`;
-			}
-		});
-
-		dropZone.forEach((el) => {
-			const dropContainer = getContainer(el);
-			if (!dropContainer) return;
-
-			dropContainer.addEventListener("pointerenter", () => {
-				if (!dragging) return;
-				if (isParent(dragging, dropContainer)) return;
-
-				setOverlapped(el, true);
-			});
-			dropContainer.addEventListener("pointerleave", () => setOverlapped(el, false));
-		});
-
-		document.addEventListener("pointerup", () => {
-			if (dragging) {
-				dragging.classList.remove("dragging");
-
-				if (nextDropSlot !== null) {
-					changeCardState(dragging.id, { zone: nextDropSlot }, true);
-					setOverlapped(nextDropSlot, false);
-				} else if (isSimpleClick) {
-					buffer.cancel();
-					// to do: set onClick event depending of the zone it was applied
-					// for the moment will try to tapped the card in each zone
-					// (will have a visual effect only on the battlefield because of css)
-					togleCardState(dragging.id, "isTapped");
-				}
-			}
-
-			dragging = null;
-		});
-	};
+	// Need to be init in a react component (because it calls useRef hook)
+	const ZoneRef = BattlefieldEventHelper.defineZoneRef();
+	BattlefieldEventHelper.setZoneRef(ZoneRef);
 
 	let hasSetupEvent = false;
 	useEffect(() => {
 		if (hasSetupEvent) return;
 
-		setupEvent(allowGrabZone, dropZone);
+		const masterEvent = new MasterBattlefieldEvent(toggleCardState, changeCardState);
+
+		masterEvent.eventSummarize(handVisible);
+
+		// setupEvent(allowGrabZone, dropZone);
 		hasSetupEvent = true;
-	}, [hasSetupEvent]);
+	}, [hasSetupEvent, handVisible]);
 
 	const changeCardState = (cardId: string, newState: ICardState, resetState = false) => {
 		const newList = isTokenID(cardId) ? [...tokenList] : [...cardDataList];
@@ -158,7 +57,7 @@ function BattleField({
 		else setCardDataList(newList);
 	};
 
-	const togleCardState = (cardId: string, stateName: string) => {
+	const toggleCardState = (cardId: string, stateName: string) => {
 		const currentState = getCurrentCard(cardId).state[stateName];
 		if (typeof currentState != "boolean" && typeof currentState != "undefined") {
 			console.error("Can't toggle that kind of statement: " + typeof currentState);
@@ -188,7 +87,7 @@ function BattleField({
 	return (
 		<div className="playfield">
 			<CardsSlot
-				ref={ZoneRef.get(Zone.Battlefield)!}
+				ref={BattlefieldEventHelper.ZoneRef.get(Zone.Battlefield)!}
 				id="battlefield-slot"
 				cardList={cardDataList.filter((card) => card.state.zone == Zone.Battlefield).concat()}
 				cardContextMenu={[
@@ -205,21 +104,21 @@ function BattleField({
 						id: "face-down",
 						caption: "Face Down/Up",
 						onClick: (cardId) => {
-							togleCardState(cardId, "isFrontSide");
+							toggleCardState(cardId, "isFrontSide");
 						},
 					},
 					{
 						id: "turn",
 						caption: "Turn Over",
 						onClick: (cardId) => {
-							togleCardState(cardId, "isFrontFaceSide");
+							toggleCardState(cardId, "isFrontFaceSide");
 						},
 						isHidden: (cardId) => getCurrentCard(cardId).card.back_card == undefined,
 					},
 				]}
 			/>
 			<CardsSlot
-				ref={ZoneRef.get(Zone.Deck)!}
+				ref={BattlefieldEventHelper.ZoneRef.get(Zone.Deck)!}
 				id="deck-pile-slot"
 				placeholder="Deck"
 				cardList={cardDataList.filter((card) => card.state.zone == Zone.Deck)}
@@ -249,7 +148,7 @@ function BattleField({
 			/>
 
 			<CardsSlot
-				ref={ZoneRef.get(Zone.Exile)!}
+				ref={BattlefieldEventHelper.ZoneRef.get(Zone.Exile)!}
 				id="exile-slot"
 				placeholder="Exile"
 				cardList={cardDataList.filter((card) => card.state.zone == Zone.Exile)}
@@ -260,7 +159,7 @@ function BattleField({
 			/>
 
 			<CardsSlot
-				ref={ZoneRef.get(Zone.Graveyard)!}
+				ref={BattlefieldEventHelper.ZoneRef.get(Zone.Graveyard)!}
 				id="graveyard-slot"
 				placeholder="Graveyard"
 				cardList={cardDataList.filter((card) => card.state.zone == Zone.Graveyard)}
@@ -271,7 +170,7 @@ function BattleField({
 			/>
 
 			<CardsSlot
-				ref={ZoneRef.get(Zone.Hand)!}
+				ref={BattlefieldEventHelper.ZoneRef.get(Zone.Hand)!}
 				id="hand-slot"
 				cardList={cardDataList.filter((card) => card.state.zone == Zone.Hand)}
 				cardContextMenu={[
@@ -299,7 +198,7 @@ function BattleField({
 				]}
 			/>
 			<CardsSlot
-				ref={ZoneRef.get(Zone.Stack)!}
+				ref={BattlefieldEventHelper.ZoneRef.get(Zone.Stack)!}
 				id="stack-slot"
 				cardList={cardDataList.filter((card) => card.state.zone == Zone.Stack)}
 				onClick={moveFromStack}
