@@ -4,7 +4,7 @@ import { shuffle, toNumber } from "./handler";
 export function newFullDeck(cardList: Card[], sleeveColor: string): ICardData[] {
 	return shuffle(cardList).map((card, index) => {
 		const state: ICardState = {
-			sleeveColor: sleeveColor, // deck.sections[0].color,
+			sleeveColor: sleeveColor,
 			isFrontFaceSide: true,
 			isFrontSide: false,
 			visibleArrow: false,

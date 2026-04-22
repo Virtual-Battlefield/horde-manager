@@ -138,7 +138,7 @@ export class MasterBattlefieldEvent {
 	}
 }
 
-export class DragCardEvent implements BattlefieldEvent {
+class DragCardEvent implements BattlefieldEvent {
 	dragging: HTMLElement | null = null;
 	nextDropSlot: Zone | null = null;
 	allowGrabZone: Zone[];
@@ -252,7 +252,7 @@ export class DragCardEvent implements BattlefieldEvent {
 	}
 }
 
-export class TappedEvent implements BattlefieldEvent {
+class TappedEvent implements BattlefieldEvent {
 	clickedCard: HTMLElement | null = null;
 	allowTapZone: Zone[];
 	isSimpleClick: boolean = false;
