@@ -52,6 +52,7 @@ function BattleField({
 		if (resetState) {
 			newState.isFrontFaceSide = true;
 			newState.isTapped = false;
+			currentCard.timestamp = Date.now();
 		}
 
 		currentCard.state = patchObject(currentCard.state, newState);
@@ -125,6 +126,7 @@ function BattleField({
 				id="deck-pile-slot"
 				placeholder="Deck"
 				cardList={cardDataList.filter((card) => card.state.zone == Zone.Deck)}
+				sortedCard={false}
 				onClick={(currentCardList) => {
 					changeCardState(
 						currentCardList[currentCardList.length - 1].id,
@@ -175,6 +177,7 @@ function BattleField({
 			<CardsSlot
 				ref={BattlefieldEventHelper.ZoneRef.get(Zone.Hand)!}
 				id="hand-slot"
+				sortedCard={false}
 				cardList={cardDataList.filter((card) => card.state.zone == Zone.Hand)}
 				cardContextMenu={[
 					{

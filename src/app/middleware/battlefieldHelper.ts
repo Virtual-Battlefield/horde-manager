@@ -16,6 +16,7 @@ export function newFullDeck(cardList: Card[], sleeveColor: string): ICardData[] 
 			card: card,
 			state,
 			type: CardType.Normal,
+			timestamp: Date.now(),
 		};
 	});
 }
@@ -39,6 +40,7 @@ export function createToken(card: Card, identifier: string): ICardData {
 			isTapped: false,
 		},
 		type: CardType.Token,
+		timestamp: Date.now(),
 	};
 }
 

@@ -8,11 +8,25 @@ type CardContainerProps = {
 	id: string;
 	placeholder?: string;
 	cardList: ICardData[];
+	sortedCard?: boolean;
 	cardContextMenu?: ContextMenuItem[];
 	onClick?: (currentCardList: ICardData[]) => void;
 };
 
-export function CardsSlot({ ref, id, placeholder, cardList, cardContextMenu, onClick }: CardContainerProps) {
+export function CardsSlot({
+	ref,
+	id,
+	placeholder,
+	cardList,
+	sortedCard = true,
+	cardContextMenu,
+	onClick,
+}: CardContainerProps) {
+	if (sortedCard) {
+		cardList.sort((a, b) => {
+			return a.timestamp - b.timestamp;
+		});
+	}
 	const currentCardElements = cardList.map((cardData) => {
 		const idE = id + "_" + cardData.id;
 
