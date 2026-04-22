@@ -34,11 +34,14 @@ function BattleField({
 		if (hasSetupEvent) return;
 
 		const masterEvent = new MasterBattlefieldEvent(toggleCardState, changeCardState);
-
 		masterEvent.eventSummarize(handVisible);
 
-		// setupEvent(allowGrabZone, dropZone);
 		hasSetupEvent = true;
+
+		return () => {
+			masterEvent.removeEvents();
+			hasSetupEvent = false;
+		};
 	}, [hasSetupEvent, handVisible]);
 
 	const changeCardState = (cardId: string, newState: ICardState, resetState = false) => {

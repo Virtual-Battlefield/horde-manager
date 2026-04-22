@@ -82,11 +82,14 @@ interface BattlefieldEvent {
 export class MasterBattlefieldEvent {
 	setterFunction: SetterFunction;
 
+	callBacksRemoveEvent: (() => void)[];
+
 	constructor(
 		toggleCardState: (cardId: string, stateName: string) => void,
 		changeCardState: (cardId: string, newState: ICardState, force?: boolean) => void,
 	) {
 		this.setterFunction = { toggleCardState: toggleCardState, changeCardState: changeCardState };
+		this.callBacksRemoveEvent = [];
 	}
 
 	eventSummarize(canDropInHand: boolean) {
@@ -96,6 +99,7 @@ export class MasterBattlefieldEvent {
 			allowGrabZone.push(Zone.Hand);
 			dropZone.push(Zone.Hand);
 		}
+		this.callBacksRemoveEvent = [];
 
 		const allClassEvent = [
 			new DragCardEvent(allowGrabZone, dropZone, this.setterFunction),
@@ -107,6 +111,7 @@ export class MasterBattlefieldEvent {
 			if (!event) return;
 			for (const [key, value] of Object.entries(event)) {
 				document.addEventListener(key, (e: any) => value(e));
+				this.callBacksRemoveEvent.push(() => document.removeEventListener(key, (e: any) => value(e)));
 			}
 		});
 
@@ -119,9 +124,17 @@ export class MasterBattlefieldEvent {
 
 				for (const [eventName, eventFunction] of Object.entries(value)) {
 					container.addEventListener(eventName, (e: any) => eventFunction(e));
+					this.callBacksRemoveEvent.push(() =>
+						container.removeEventListener(eventName, (e: any) => eventFunction(e)),
+					);
 				}
 			}
 		});
+	}
+
+	removeEvents() {
+		this.callBacksRemoveEvent.forEach((callBack) => callBack());
+		this.callBacksRemoveEvent = [];
 	}
 }
 
@@ -270,6 +283,11 @@ export class TappedEvent implements BattlefieldEvent {
 		(e.target as HTMLElement).releasePointerCapture(e.pointerId);
 	}
 
+	pointerMove() {
+		// @todo set threshold when moving
+		// this.isSimpleClick = false;
+	}
+
 	pointerUp() {
 		if (this.clickedCard && this.isSimpleClick) {
 			this.buffer.cancel();
@@ -282,6 +300,7 @@ export class TappedEvent implements BattlefieldEvent {
 	listGlobalEvent(): EventDescription {
 		return {
 			pointerdown: (e: PointerEvent) => this.pointerDown(e),
+			pointermove: () => this.pointerMove(),
 			pointerup: () => this.pointerUp(),
 		};
 	}
