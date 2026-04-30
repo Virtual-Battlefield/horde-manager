@@ -139,14 +139,43 @@
 #life-slot {
   position: absolute;
   top: 0;
-  left: 0;
-  width: 100%;
+  right: 0;
+  width: 12.5%;
   z-index: 2;
 
   .life-container {
-    margin: 1em;
-    padding: 1em;
+    margin: 0 0 1em 1em;
+    padding-bottom: 1em;
     background-color: var(--background-gray-color);
-    border-radius: 15px;
+    border-bottom-left-radius: 15px;
+    display: flex;
+    justify-content: space-between;
+
+    .action-container {
+      display: flex;
+      flex-direction: column;
+      align-items: start;
+      gap: 0.5em;
+      padding: 0.5em;
+
+      .name-slot {
+        font-size: 1.1em;
+        font-weight: bold;
+      }
+    }
+
+    .life-slot {
+      width: 50%;
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      flex-wrap: wrap;
+      align-content: center;
+      border: white solid;
+      border-width: 0 0 1px 1px;
+      border-bottom-left-radius: 15px;
+      background-color: #00000050;
+      font-size: 2.75em;
+    }
   }
 }

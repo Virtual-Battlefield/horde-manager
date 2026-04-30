@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { IDeck } from "@virtual-library/mtg-card-handler";
 import { Store } from "../store";
 import BattleField from "../components/playpage/BattleField";
+import { AddTokenIcon } from "../middleware/SVGLoader";
 
 function Playpage() {
 	const Deck = Store.Local.getObject("currentDeck") as IDeck;
@@ -26,8 +27,15 @@ function Playpage() {
 			<div className="Main-body grid-pattern">
 				<div id="life-slot">
 					<div className="life-container">
-						<span>life</span>
-						<div>Add token</div>
+						<div className="action-container">
+							<div className="name-slot">Player 1</div>
+							<div>
+								<AddTokenIcon color="white" size={24} />
+							</div>
+						</div>
+						<div className="life-slot">
+							<span>40</span>
+						</div>
 					</div>
 				</div>
 				<BattleField deck={currentDeck} handVisible={false} additionnalCard={fieldToken} />
