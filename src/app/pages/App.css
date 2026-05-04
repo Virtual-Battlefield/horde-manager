@@ -72,20 +72,29 @@
   align-content: flex-start;
 
   &>* {
+    --nb-columns: 2;
     margin: 0.25em;
-    width: calc(100% / 2 - 0.5em);
+    width: calc(100% / var(--nb-columns) - 0.5em);
   }
 
   &.col3>* {
-    width: calc(100% / 3 - 0.5em);
+    --nb-columns: 3;
+  }
+
+  &.col4>* {
+    --nb-columns: 4;
   }
 
   &.col5>* {
-    width: calc(100% / 5 - 0.5em);
+    --nb-columns: 5;
   }
 
   &.col7>* {
-    width: calc(100% / 7 - 0.5em);
+    --nb-columns: 7;
+  }
+
+  &.col-auto>* {
+    width: auto;
   }
 }
 
