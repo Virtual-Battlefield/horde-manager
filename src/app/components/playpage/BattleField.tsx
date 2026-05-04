@@ -1,6 +1,6 @@
 import "../components.css";
 import { CardsSlot } from "./CardContainer";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { createToken, getGlobalCardIndex, isToken, isTokenID, newFullDeck } from "../../middleware/battlefieldHelper";
 import { patchObject } from "../../middleware/handler";
 import { Card, ICardData, ICardState, ISection, Zone } from "@virtual-library/mtg-card-handler";
@@ -18,6 +18,7 @@ function BattleField({
 	const [cardDataList, setCardDataList] = useState<ICardData[]>(newFullDeck(deck.card_list, deck.color));
 	const [tokenList, setTokenList] = useState<ICardData[]>(
 		additionnalCard.map((card, index) => createToken(card, "token_" + index)),
+		tokens.map((card, index) => createToken(card, "token_" + index)),
 	);
 
 	const getCurrentCard = (id: string) => {
@@ -29,13 +30,6 @@ function BattleField({
 	const ZoneRef = BattlefieldEventHelper.defineZoneRef();
 	BattlefieldEventHelper.setZoneRef(ZoneRef);
 
-	let hasSetupEvent = false;
-	useEffect(() => {
-		if (hasSetupEvent) return;
-
-		const masterEvent = new MasterBattlefieldEvent(toggleCardState, changeCardState);
-		masterEvent.eventSummarize(handVisible);
-
 		hasSetupEvent = true;
 
 		return () => {
@@ -43,7 +37,6 @@ function BattleField({
 			hasSetupEvent = false;
 		};
 	}, [hasSetupEvent, handVisible]);
-
 	const changeCardState = (cardId: string, newState: ICardState, resetState = false) => {
 		const newList = isTokenID(cardId) ? [...tokenList] : [...cardDataList];
 		const currentCard = newList[getGlobalCardIndex(cardId)]; // find element from a new list

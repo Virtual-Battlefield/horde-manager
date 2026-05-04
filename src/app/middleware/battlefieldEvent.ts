@@ -1,6 +1,6 @@
 import { ICardState, Zone } from "@virtual-library/mtg-card-handler";
 import { clamp, invlerp, isParent } from "./handler";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Buffer } from "./buffer";
 
 type EventDescription = {
@@ -82,14 +82,11 @@ interface BattlefieldEvent {
 export class MasterBattlefieldEvent {
 	setterFunction: SetterFunction;
 
-	callBacksRemoveEvent: (() => void)[];
-
 	constructor(
 		toggleCardState: (cardId: string, stateName: string) => void,
 		changeCardState: (cardId: string, newState: ICardState, force?: boolean) => void,
 	) {
 		this.setterFunction = { toggleCardState: toggleCardState, changeCardState: changeCardState };
-		this.callBacksRemoveEvent = [];
 	}
 
 	eventSummarize(canDropInHand: boolean) {
@@ -99,7 +96,6 @@ export class MasterBattlefieldEvent {
 			allowGrabZone.push(Zone.Hand);
 			dropZone.push(Zone.Hand);
 		}
-		this.callBacksRemoveEvent = [];
 
 		const allClassEvent = [
 			new DragCardEvent(allowGrabZone, dropZone, this.setterFunction),
@@ -107,34 +103,41 @@ export class MasterBattlefieldEvent {
 		];
 
 		const allEvent = allClassEvent.map((_class) => _class.listGlobalEvent());
-		allEvent.forEach((event) => {
-			if (!event) return;
-			for (const [key, value] of Object.entries(event)) {
-				document.addEventListener(key, (e: any) => value(e));
-				this.callBacksRemoveEvent.push(() => document.removeEventListener(key, (e: any) => value(e)));
-			}
-		});
+		const docEvent = (toAdd: boolean) => {
+			allEvent.forEach((event) => {
+				if (!event) return;
+				for (const [key, value] of Object.entries(event)) {
+					toAdd
+						? document.addEventListener(key, (e: any) => value(e))
+						: document.removeEventListener(key, (e: any) => value(e));
+				}
+			});
+		};
+		useEffect(() => {
+			docEvent(true);
+			return () => docEvent(false);
+		}, []);
 
 		const allZoneEvent = allClassEvent.map((_class) => _class.listZoneEvent());
-		allZoneEvent.forEach((zoneEvents) => {
-			if (!zoneEvents) return;
-			for (const [key, value] of Object.entries(zoneEvents)) {
-				const container = BattlefieldEventHelper.getContainer(Zone[key as keyof typeof Zone]);
-				if (!container) continue;
+		const zoneEvent = (toAdd: boolean) => {
+			allZoneEvent.forEach((zoneEvents) => {
+				if (!zoneEvents) return;
+				for (const [key, value] of Object.entries(zoneEvents)) {
+					const container = BattlefieldEventHelper.getContainer(Zone[key as keyof typeof Zone]);
+					if (!container) continue;
 
-				for (const [eventName, eventFunction] of Object.entries(value)) {
-					container.addEventListener(eventName, (e: any) => eventFunction(e));
-					this.callBacksRemoveEvent.push(() =>
-						container.removeEventListener(eventName, (e: any) => eventFunction(e)),
-					);
+					for (const [eventName, eventFunction] of Object.entries(value)) {
+						toAdd
+							? container.addEventListener(eventName, (e: any) => eventFunction(e))
+							: container.removeEventListener(eventName, (e: any) => eventFunction(e));
+					}
 				}
-			}
-		});
-	}
-
-	removeEvents() {
-		this.callBacksRemoveEvent.forEach((callBack) => callBack());
-		this.callBacksRemoveEvent = [];
+			});
+		};
+		useEffect(() => {
+			zoneEvent(true);
+			return () => zoneEvent(false);
+		}, []);
 	}
 }
 
