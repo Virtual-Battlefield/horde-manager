@@ -8,7 +8,7 @@ import Playpage from "./app/pages/Playpage";
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
 root.render(
-	<React.StrictMode>
+	<>
 		<title>Horde Manager MTG</title>
 
 		<BrowserRouter>
@@ -19,5 +19,5 @@ root.render(
 				<Route path="*" element={<Navigate replace to="/" />} />
 			</Routes>
 		</BrowserRouter>
-	</React.StrictMode>,
+	</>,
 );
