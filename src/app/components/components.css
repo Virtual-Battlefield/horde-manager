@@ -1,5 +1,4 @@
 .deck-card {
-    width: 45%;
     height: fit-content;
     position: relative;
     aspect-ratio: 10 / 7;
@@ -55,8 +54,8 @@
         }
 
         .occurence {
-            top: 2em;
-            right: 1em;
+            top: 10%;
+            right: 5%;
             font-weight: 700;
             -webkit-backface-visibility: hidden;
             /* Safari */

@@ -12,7 +12,7 @@ function DeckList() {
 			</header>
 			<div className="Main-body">
 				<hr />
-				<div className="card-container col3">
+				<div className="card-container col-lg-3 col-md-2">
 					{decks &&
 						decks.length > 0 &&
 						decks.map((deck) => <ListDeckCard key={deck.id as React.Key} deck={deck} />)}
