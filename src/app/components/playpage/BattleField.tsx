@@ -1,6 +1,6 @@
 import "../components.css";
 import { CardsSlot } from "./CardContainer";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createToken, getGlobalCardIndex, isToken, isTokenID, newFullDeck } from "../../middleware/battlefieldHelper";
 import { patchObject } from "../../middleware/handler";
 import { Card, ICardData, ICardState, ISection, Zone } from "@virtual-library/mtg-card-handler";
@@ -58,9 +58,6 @@ function BattleField({
 		changeCardState(cardId, obj);
 	};
 
-	const masterEvent = new MasterBattlefieldEvent(toggleCardState, changeCardState);
-	masterEvent.eventSummarize(handVisible);
-
 	const moveFromStack = (currentCardList: ICardData[]) => {
 		if (currentCardList.length < 1) return;
 
@@ -76,6 +73,13 @@ function BattleField({
 				: Zone.Battlefield;
 		changeCardState(currentCard.id, { zone: destination, visibleArrow: true }, true);
 	};
+
+	useEffect(() => {
+		const masterEvent = new MasterBattlefieldEvent(toggleCardState, changeCardState);
+		masterEvent.eventSummarize(handVisible);
+
+		return () => masterEvent.removeEvents();
+	}, [handVisible]);
 
 	return (
 		<div className="playfield">
