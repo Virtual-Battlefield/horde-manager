@@ -30,13 +30,6 @@ function BattleField({
 	const ZoneRef = BattlefieldEventHelper.defineZoneRef();
 	BattlefieldEventHelper.setZoneRef(ZoneRef);
 
-		hasSetupEvent = true;
-
-		return () => {
-			masterEvent.removeEvents();
-			hasSetupEvent = false;
-		};
-	}, [hasSetupEvent, handVisible]);
 	const changeCardState = (cardId: string, newState: ICardState, resetState = false) => {
 		const newList = isTokenID(cardId) ? [...tokenList] : [...cardDataList];
 		const currentCard = newList[getGlobalCardIndex(cardId)]; // find element from a new list
@@ -64,6 +57,9 @@ function BattleField({
 		const obj = { [stateName]: typeof currentState == "undefined" ? true : !currentState };
 		changeCardState(cardId, obj);
 	};
+
+	const masterEvent = new MasterBattlefieldEvent(toggleCardState, changeCardState);
+	masterEvent.eventSummarize(handVisible);
 
 	const moveFromStack = (currentCardList: ICardData[]) => {
 		if (currentCardList.length < 1) return;
