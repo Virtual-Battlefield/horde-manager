@@ -6,6 +6,7 @@ import BattleField from "../components/playpage/BattleField";
 import { AddTokenIcon } from "../middleware/SVGLoader";
 import Popup from "../components/Popup";
 import CardList from "../components/exhibit/CardList";
+import PleaseRotate from "../../public/lib/pleaserotate.min.js";
 
 function Playpage() {
 	const Deck = Store.Local.getObject("currentDeck") as IDeck;
@@ -26,6 +27,18 @@ function Playpage() {
 		e.preventDefault();
 	};
 
+	useEffect(() => {
+		// /* you can pass in options here*/
+		const PleaseRotateOptions = {
+			onlyMobile: false,
+			subMessage: "",
+			allowClickBypass: false,
+		};
+		PleaseRotate.start(PleaseRotateOptions);
+
+		return () => PleaseRotate.stop();
+	}, []);
+
 	const playerName = "Player 1";
 	return (
 		<div className="Main-page">
@@ -43,16 +56,16 @@ function Playpage() {
 						</div>
 					</div>
 				</div>
-				<BattleField deck={currentDeck} handVisible={false} additionnalCard={fieldToken} />
 				<Popup show={showTokenPopup} onClose={() => setShowTokenPopup(false)} title="Import Token">
 					{deckRelation ? (
 						<div style={{ width: "1200px" }}>
-							<CardList cardList={deckRelation} nbColumns={"4"} />
+							<CardList cardList={deckRelation} classColumn={"col4"} />
 						</div>
 					) : (
 						<p>No token found in the deck relation</p>
 					)}
 				</Popup>
+				<BattleField deck={currentDeck} handVisible={false} tokens={fieldToken} />
 			</div>
 		</div>
 	);
