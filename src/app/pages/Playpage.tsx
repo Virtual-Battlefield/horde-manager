@@ -58,8 +58,8 @@ function Playpage() {
 				</div>
 				<Popup show={showTokenPopup} onClose={() => setShowTokenPopup(false)} title="Import Token">
 					{deckRelation ? (
-						<div style={{ width: "1200px" }}>
-							<CardList cardList={deckRelation} classColumn={"col4"} />
+						<div style={{ width: "120em" }}>
+							<CardList cardList={deckRelation} classColumn={"col2 col-sm-3 col-lg-5 col-xl-4"} />
 						</div>
 					) : (
 						<p>No token found in the deck relation</p>
