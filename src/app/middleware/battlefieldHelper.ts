@@ -27,7 +27,7 @@ export function getGlobalCardIndex(cardId: string): number {
 
 //#region token related
 
-export function createToken(card: Card, identifier: string): ICardData {
+export function createToken(card: Card, identifier: string, zone = Zone.Battlefield): ICardData {
 	return {
 		id: card.id + "_" + identifier,
 		card: card,
@@ -36,7 +36,7 @@ export function createToken(card: Card, identifier: string): ICardData {
 			isFrontFaceSide: true,
 			isFrontSide: true,
 			visibleArrow: false,
-			zone: Zone.Battlefield,
+			zone: zone,
 			isTapped: false,
 		},
 		type: CardType.Token,

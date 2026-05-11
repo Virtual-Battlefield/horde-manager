@@ -1,7 +1,7 @@
 import "../components.css";
 import { CardsSlot } from "./CardContainer";
 import { useEffect, useRef, useState } from "react";
-import { getGlobalCardIndex, isToken, isTokenID, newFullDeck } from "../../middleware/battlefieldHelper";
+import { createToken, getGlobalCardIndex, isToken, isTokenID, newFullDeck } from "../../middleware/battlefieldHelper";
 import { patchObject } from "../../middleware/handler";
 import { Card, ICardData, ICardState, ISection, Zone } from "@virtual-library/mtg-card-handler";
 import { BattlefieldEventHelper, MasterBattlefieldEvent } from "../../middleware/battlefieldEvent";
@@ -96,9 +96,17 @@ function BattleField({
 					//     - Bottom
 					//     - Shuffle
 					//     - Fixed position -> open popup
-					// - Create Copy (copy is a token)
 					// - Phase out / in
 					// - Toggle Counters
+					{
+						id: "copy",
+						caption: "Create Token Copy",
+						onClick: (cardId) => {
+							const currentCard = getCurrentCard(cardId);
+							const token = createToken(currentCard.card, "token_" + tokenList.length);
+							setTokenList([...tokenList, token]);
+						},
+					},
 					{
 						id: "face-down",
 						caption: "Face Down/Up",
@@ -197,11 +205,12 @@ function BattleField({
 			<CardsSlot
 				ref={BattlefieldEventHelper.ZoneRef.get(Zone.Stack)!}
 				id="stack-slot"
-				cardList={cardDataList.filter((card) => card.state.zone == Zone.Stack)}
+				cardList={cardDataList
+					.filter((card) => card.state.zone == Zone.Stack)
+					.concat(tokenList.filter((card) => card.state.zone == Zone.Stack))}
 				onClick={moveFromStack}
 				cardContextMenu={[
 					// Add:
-					// - Create Copy (copy is a token)
 					// - Move to Deck
 					//   - Top
 					//   - Bottom
@@ -219,6 +228,15 @@ function BattleField({
 						caption: "Move to Exile",
 						onClick: (cardId) => {
 							changeCardState(cardId, { zone: Zone.Exile, visibleArrow: true }, true);
+						},
+					},
+					{
+						id: "copy",
+						caption: "Create Token Copy",
+						onClick: (cardId) => {
+							const currentCard = getCurrentCard(cardId);
+							const token = createToken(currentCard.card, "token_" + tokenList.length, Zone.Stack);
+							setTokenList([...tokenList, token]);
 						},
 					},
 				]}
