@@ -113,6 +113,24 @@
         scale: 1.15;
     }
 
+    &.labeled {
+        &::after {
+            content: attr(data-label);
+            position: absolute;
+            top: 8.75%;
+            left: 12.5%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            text-align: center;
+            background-color: #00000077;
+            color: var(--background-light-gray-color);
+            padding: 0.3em 0;
+            font-size: 0.8em;
+            font-weight: 700;
+            width: 100%;
+            clip-path: polygon(40% 0, 60% 0, 75% 100%, 25% 100%);
+        }
+    }
+
     img {
         width: 100%;
         border-radius: var(--img-border-radius);

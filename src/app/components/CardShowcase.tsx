@@ -8,6 +8,7 @@ type CardDisplayProps = {
 	isFrontSide?: boolean;
 	isFrontFaceSide?: boolean;
 	sleeveColor?: string;
+	label?: string;
 };
 
 export function CardShowcase({
@@ -16,6 +17,7 @@ export function CardShowcase({
 	isFrontSide,
 	isFrontFaceSide,
 	sleeveColor,
+	label,
 	children,
 }: PropsWithChildren<CardDisplayProps>) {
 	let backSide = null;
@@ -25,7 +27,9 @@ export function CardShowcase({
 	}
 
 	return (
-		<div className={"card" + (isFrontSide == undefined || isFrontSide ? "" : " rotate")}>
+		<div
+			className={"card" + (isFrontSide == undefined || isFrontSide ? "" : " rotate") + (label ? " labeled" : "")}
+			data-label={label}>
 			<div className={"card-content" + (isFrontFaceSide == undefined || isFrontFaceSide ? "" : " rotate")}>
 				<div className="front-card">
 					<img src={card.front_card.full_image.toString()} alt={card.front_card.name} />

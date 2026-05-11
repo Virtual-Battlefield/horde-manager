@@ -1,7 +1,7 @@
 import "../components.css";
 import { CardShowcase } from "../CardShowcase";
 import ContextMenu, { ContextMenuItem } from "../ContextMenu";
-import { ICardData } from "@virtual-library/mtg-card-handler";
+import { CardType, ICardData } from "@virtual-library/mtg-card-handler";
 
 type CardContainerProps = {
 	ref: React.RefObject<HTMLDivElement | null>;
@@ -30,6 +30,8 @@ export function CardsSlot({
 	const currentCardElements = cardList.map((cardData) => {
 		const idE = id + "_" + cardData.id;
 
+		const label = cardData.type == CardType.Token ? "Token" : undefined;
+
 		const card = (
 			<CardShowcase
 				card={cardData.card}
@@ -37,6 +39,7 @@ export function CardsSlot({
 				isFrontFaceSide={cardData.state.isFrontFaceSide}
 				isFrontSide={cardData.state.isFrontSide}
 				sleeveColor={cardData.state.sleeveColor}
+				label={label}
 			/>
 		);
 

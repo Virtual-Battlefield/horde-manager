@@ -1,22 +1,25 @@
 import "./App.css";
 import { useEffect, useState } from "react";
-import { IDeck } from "@virtual-library/mtg-card-handler";
+import { Card, ICardData, IDeck } from "@virtual-library/mtg-card-handler";
 import { Store } from "../store";
 import BattleField from "../components/playpage/BattleField";
 import { AddTokenIcon } from "../middleware/SVGLoader";
 import Popup from "../components/Popup";
 import CardList from "../components/exhibit/CardList";
 import PleaseRotate from "../../public/lib/pleaserotate.min.js";
+import { createToken } from "../middleware/battlefieldHelper";
 
 function Playpage() {
 	const Deck = Store.Local.getObject("currentDeck") as IDeck;
-	const [fieldToken, setFieldToken] = useState([]);
+	const [tokenList, setTokenList] = useState<ICardData[]>([]);
 	const [showTokenPopup, setShowTokenPopup] = useState(false);
 
 	console.log(Deck);
 	const currentDeck = Deck.sections[0];
 	const deckRelation = Deck.card_relation;
 
+	// Prevent the user from accidentally refreshing the page
+	// (because it will reset the battlefield)
 	useEffect(() => {
 		window.addEventListener("beforeunload", alertUser);
 		return () => {
@@ -27,6 +30,8 @@ function Playpage() {
 		e.preventDefault();
 	};
 
+	// Prevent the user from having the phone in landscape mode
+	// (because the battlefield is designed for portrait mode)
 	useEffect(() => {
 		// /* you can pass in options here*/
 		const PleaseRotateOptions = {
@@ -38,6 +43,13 @@ function Playpage() {
 
 		return () => PleaseRotate.stop();
 	}, []);
+
+	const addToken = (card: Card) => {
+		const cardData = createToken(card, "token_" + tokenList.length);
+		setTokenList([...tokenList, cardData]);
+		console.log("Adding token", tokenList);
+		setShowTokenPopup(false);
+	};
 
 	const playerName = "Player 1";
 	return (
@@ -59,13 +71,17 @@ function Playpage() {
 				<Popup show={showTokenPopup} onClose={() => setShowTokenPopup(false)} title="Import Token">
 					{deckRelation ? (
 						<div style={{ width: "120em" }}>
-							<CardList cardList={deckRelation} classColumn={"col2 col-sm-3 col-lg-5 col-xl-4"} />
+							<CardList
+								cardList={deckRelation}
+								classColumn={"col2 col-sm-3 col-lg-5 col-xl-4"}
+								onCardClick={addToken}
+							/>
 						</div>
 					) : (
 						<p>No token found in the deck relation</p>
 					)}
 				</Popup>
-				<BattleField deck={currentDeck} handVisible={false} tokens={fieldToken} />
+				<BattleField deck={currentDeck} handVisible={false} tokenList={tokenList} setTokenList={setTokenList} />
 			</div>
 		</div>
 	);

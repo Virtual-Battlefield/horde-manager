@@ -34,7 +34,7 @@ export function createToken(card: Card, identifier: string): ICardData {
 		state: {
 			sleeveColor: "#0f0c05",
 			isFrontFaceSide: true,
-			isFrontSide: false,
+			isFrontSide: true,
 			visibleArrow: false,
 			zone: Zone.Battlefield,
 			isTapped: false,

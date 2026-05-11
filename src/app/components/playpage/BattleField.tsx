@@ -1,7 +1,7 @@
 import "../components.css";
 import { CardsSlot } from "./CardContainer";
-import { useEffect, useState } from "react";
-import { createToken, getGlobalCardIndex, isToken, isTokenID, newFullDeck } from "../../middleware/battlefieldHelper";
+import { useEffect, useRef, useState } from "react";
+import { getGlobalCardIndex, isToken, isTokenID, newFullDeck } from "../../middleware/battlefieldHelper";
 import { patchObject } from "../../middleware/handler";
 import { Card, ICardData, ICardState, ISection, Zone } from "@virtual-library/mtg-card-handler";
 import { BattlefieldEventHelper, MasterBattlefieldEvent } from "../../middleware/battlefieldEvent";
@@ -9,21 +9,21 @@ import { BattlefieldEventHelper, MasterBattlefieldEvent } from "../../middleware
 function BattleField({
 	deck,
 	handVisible,
-	additionnalCard,
+	tokenList,
+	setTokenList,
 }: {
 	deck: ISection;
 	handVisible: boolean;
-	additionnalCard: Card[];
+	tokenList: ICardData[];
+	setTokenList: React.Dispatch<React.SetStateAction<ICardData[]>>;
 }) {
 	const [cardDataList, setCardDataList] = useState<ICardData[]>(newFullDeck(deck.card_list, deck.color));
-	const [tokenList, setTokenList] = useState<ICardData[]>(
-		additionnalCard.map((card, index) => createToken(card, "token_" + index)),
-		tokens.map((card, index) => createToken(card, "token_" + index)),
-	);
+	const tokenDataListRef = useRef<ICardData[]>(tokenList);
+	tokenDataListRef.current = tokenList;
 
 	const getCurrentCard = (id: string) => {
 		const index = getGlobalCardIndex(id);
-		return id.includes("token") ? tokenList[index] : cardDataList[index];
+		return isTokenID(id) ? tokenDataListRef.current[index] : cardDataList[index];
 	};
 
 	// Need to be init in a react component (because it calls useRef hook)
@@ -31,7 +31,7 @@ function BattleField({
 	BattlefieldEventHelper.setZoneRef(ZoneRef);
 
 	const changeCardState = (cardId: string, newState: ICardState, resetState = false) => {
-		const newList = isTokenID(cardId) ? [...tokenList] : [...cardDataList];
+		const newList = isTokenID(cardId) ? [...tokenDataListRef.current] : [...cardDataList];
 		const currentCard = newList[getGlobalCardIndex(cardId)]; // find element from a new list
 		if (!currentCard) return;
 
@@ -86,7 +86,9 @@ function BattleField({
 			<CardsSlot
 				ref={BattlefieldEventHelper.ZoneRef.get(Zone.Battlefield)!}
 				id="battlefield-slot"
-				cardList={cardDataList.filter((card) => card.state.zone == Zone.Battlefield).concat()}
+				cardList={cardDataList
+					.filter((card) => card.state.zone == Zone.Battlefield)
+					.concat(tokenList.filter((card) => card.state.zone == Zone.Battlefield))}
 				cardContextMenu={[
 					// Add:
 					//   - Move to Deck
@@ -100,16 +102,12 @@ function BattleField({
 					{
 						id: "face-down",
 						caption: "Face Down/Up",
-						onClick: (cardId) => {
-							toggleCardState(cardId, "isFrontSide");
-						},
+						onClick: (cardId) => toggleCardState(cardId, "isFrontSide"),
 					},
 					{
 						id: "turn",
 						caption: "Turn Over",
-						onClick: (cardId) => {
-							toggleCardState(cardId, "isFrontFaceSide");
-						},
+						onClick: (cardId) => toggleCardState(cardId, "isFrontFaceSide"),
 						isHidden: (cardId) => getCurrentCard(cardId).card.back_card == undefined,
 					},
 				]}
