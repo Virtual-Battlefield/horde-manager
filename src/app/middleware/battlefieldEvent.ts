@@ -259,7 +259,7 @@ class TappedEvent implements BattlefieldEvent {
 	setterFunction: SetterFunction;
 
 	constructor(setterFunction: SetterFunction) {
-		this.buffer = new Buffer(300);
+		this.buffer = new Buffer(150);
 		this.allowTapZone = [Zone.Battlefield];
 		this.setterFunction = setterFunction;
 	}

@@ -47,7 +47,6 @@ function Playpage() {
 	const addToken = (card: Card) => {
 		const cardData = createToken(card, "token_" + tokenList.length);
 		setTokenList([...tokenList, cardData]);
-		console.log("Adding token", tokenList);
 		setShowTokenPopup(false);
 	};
 

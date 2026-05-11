@@ -14,9 +14,9 @@ export class Buffer {
 	start(callBack: () => void) {
 		if (this.timeout != null) clearTimeout(this.timeout);
 
-		console.log("start buffer!");
+		// console.log("start buffer!");
 		this.timeout = setTimeout(() => {
-			console.log("resolve");
+			// console.log("resolve");
 			this.timeout = null;
 			callBack();
 		}, this.milisecond);
@@ -26,6 +26,6 @@ export class Buffer {
 		if (this.timeout == null) return;
 		clearTimeout(this.timeout);
 		this.timeout = null;
-		console.log("cancel buffer");
+		// console.log("cancel buffer");
 	}
 }
